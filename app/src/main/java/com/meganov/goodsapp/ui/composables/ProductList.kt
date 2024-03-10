@@ -135,7 +135,7 @@ fun ProductList(
                 modifier = Modifier.background(MaterialTheme.colorScheme.background)
             ) {
                 items(products) { product ->
-                    ProductItem(product, navController)
+                    if (product != null) ProductItem(product, navController)
                 }
             }
         }
@@ -161,7 +161,7 @@ fun ProductItem(product: Product, navController: NavController) {
         ) {
             Row {
                 NetworkImage(
-                    url = product.thumbnail,
+                    url = product.thumbnail?:"",
                     modifier = Modifier
                         .height(170.dp)
                         .width(180.dp)
@@ -201,7 +201,7 @@ fun NetworkImage(url: String, modifier: Modifier = Modifier) {
 fun DetailsCard(product: Product) {
     Column {
         Text(
-            text = product.title,
+            text = product.title?:"Error loading title",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
@@ -214,13 +214,13 @@ fun DetailsCard(product: Product) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "${product.price} $",
+                text = "${product.price?:"???"} $",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = Color.Green
             )
             Spacer(modifier = Modifier.width(10.dp))
-            if (product.discountPercentage > 0) {
+            if (product.discountPercentage != null && product.discountPercentage > 0) {
                 Text(
                     text = "(-${product.discountPercentage}%)",
                     style = MaterialTheme.typography.bodyMedium,
@@ -230,10 +230,10 @@ fun DetailsCard(product: Product) {
             }
         }
         Spacer(modifier = Modifier.height(5.dp))
-        RatingBar(product.rating)
+        RatingBar(product.rating?:-1.0)
         Spacer(modifier = Modifier.height(5.dp))
         Text(
-            text = product.description,
+            text = product.description?:"No description",
             style = MaterialTheme.typography.bodySmall,
             color = Color.White,
             maxLines = 3,

@@ -28,15 +28,17 @@ import com.meganov.goodsapp.data.Product
 
 @Composable
 fun ProductDetails(product: Product) {
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        LazyColumn(modifier = Modifier.padding(16.dp)) {
-            item {
-                ImageCarousel(images = product.images)
-                TextDetails(product = product)
+    if (product != null) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            LazyColumn(modifier = Modifier.padding(16.dp)) {
+                item {
+                    ImageCarousel(images = product.images?: emptyList<String>())
+                    TextDetails(product = product)
+                }
             }
         }
     }
@@ -76,18 +78,18 @@ fun CarouselItem(url: String, modifier: Modifier = Modifier) {
 @Composable
 fun TextDetails(product: Product) {
     Text(
-        text = product.title,
+        text = product.title?:"Error loading title",
         style = MaterialTheme.typography.titleMedium,
         color = Color.White,
         fontWeight = FontWeight.Bold,
         fontSize = 35.sp
     )
     Spacer(modifier = Modifier.height(20.dp))
-    RatingBar(rating = product.rating)
+    RatingBar(rating = product.rating?:-1.0)
     Spacer(modifier = Modifier.height(20.dp))
     Row {
         Text(
-            text = "${product.price} $",
+            text = "${product.price?:"???"} $",
             style = MaterialTheme.typography.titleMedium,
             color = Color.Green,
             fontWeight = FontWeight.Bold,
@@ -95,7 +97,7 @@ fun TextDetails(product: Product) {
         )
         Spacer(modifier = Modifier.width(50.dp))
         Text(
-            text = "-${product.discountPercentage}%",
+            text = "-${product.discountPercentage?:0}%",
             style = MaterialTheme.typography.titleMedium, color = Color.Red,
             fontWeight = FontWeight.Bold,
             fontSize = 25.sp
@@ -103,19 +105,19 @@ fun TextDetails(product: Product) {
     }
     Spacer(modifier = Modifier.height(20.dp))
     Text(
-        text = "Stock: ${product.stock}", style = MaterialTheme.typography.titleMedium,
+        text = "Stock: ${product.stock?:0}", style = MaterialTheme.typography.titleMedium,
         color = Color.White,
         fontSize = 20.sp
     )
     Spacer(modifier = Modifier.height(10.dp))
     Text(
-        text = "Brand: ${product.brand}", style = MaterialTheme.typography.titleMedium,
+        text = "Brand: ${product.brand?:"No brand"}", style = MaterialTheme.typography.titleMedium,
         color = Color.White,
         fontSize = 20.sp
     )
     Spacer(modifier = Modifier.height(10.dp))
     Text(
-        text = product.description,
+        text = product.description?:"No description",
         style = MaterialTheme.typography.bodyMedium,
         color = Color.White,
         fontSize = 20.sp,

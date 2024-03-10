@@ -13,6 +13,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 class ProductListVM(private val api: ProductsService) : ViewModel() {
 
     private val _products = MutableLiveData<List<Product>>()
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
     val products: LiveData<List<Product>> get() = _products
 
     private var page = 0
@@ -25,9 +27,11 @@ class ProductListVM(private val api: ProductsService) : ViewModel() {
 
     @SuppressLint("CheckResult")
     fun loadProducts() {
+        _isLoading.value = true
         api.getProducts(page * 20, 20)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doFinally { _isLoading.value = false }
             .subscribe({ newProducts ->
                 _products.value = _products.value.orEmpty() + newProducts.products
                 page++
@@ -35,4 +39,15 @@ class ProductListVM(private val api: ProductsService) : ViewModel() {
                 Log.d(loadingErrTAG, "loadProducts: ${error.message}")
             })
     }
+
+    fun getProductById(id: Int): Product? {
+        if (id-1 in _products.value!!.indices) {
+            val productByIndex = _products.value!![id-1]
+            if (productByIndex.id == id-1) {
+                return productByIndex
+            }
+        }
+        return _products.value!!.find { it.id == id }
+    }
+
 }

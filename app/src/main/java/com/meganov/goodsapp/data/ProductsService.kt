@@ -7,4 +7,7 @@ import retrofit2.http.Query
 interface ProductsService {
     @GET("/products")
     fun getProducts(@Query("skip") skip: Int, @Query("limit") limit: Int): Single<ProductsResponse>
+
+    @GET("/products/search")
+    fun search(@Query("q") query: String): Single<ProductsResponse>
 }

@@ -40,14 +40,30 @@ class ProductListVM(private val api: ProductsService) : ViewModel() {
             })
     }
 
+    @SuppressLint("CheckResult")
+    fun searchProducts(query: String) {
+        _products.value = emptyList()
+        _isLoading.value = true
+        _isLoading.value = false
+        _isLoading.value = true
+        api.search(query)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doFinally { _isLoading.value = false }
+            .subscribe({ searchResults ->
+                _products.value = searchResults.products
+            }, { error ->
+                Log.d(loadingErrTAG, "searchProducts: ${error.message}")
+            })
+    }
+
     fun getProductById(id: Int): Product? {
-        if (id-1 in _products.value!!.indices) {
-            val productByIndex = _products.value!![id-1]
-            if (productByIndex.id == id-1) {
+        if (id - 1 in _products.value!!.indices) {
+            val productByIndex = _products.value!![id - 1]
+            if (productByIndex.id == id - 1) {
                 return productByIndex
             }
         }
         return _products.value!!.find { it.id == id }
     }
-
 }

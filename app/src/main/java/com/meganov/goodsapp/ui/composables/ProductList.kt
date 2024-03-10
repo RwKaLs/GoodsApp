@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,7 +24,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -43,21 +49,37 @@ fun ProductList(
     products: List<Product>,
     isLoading: Boolean,
     navController: NavController,
+    onSearch: (String) -> Unit,
     onLoadMore: () -> Unit
 ) {
+    var searchQuery by rememberSaveable { mutableStateOf("") }
     val scrollState = rememberLazyListState()
     val closeToEnd =
         (scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) >= products.size - 2
-    if (closeToEnd && !isLoading) {
+    if (closeToEnd && !isLoading && searchQuery == "") {
         onLoadMore()
     }
-    LazyColumn(
-        state = scrollState,
-        contentPadding = PaddingValues(3.dp),
-        modifier = Modifier.background(MaterialTheme.colorScheme.background)
+    Column(
+        modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxSize()
     ) {
-        items(products) { product ->
-            ProductItem(product, navController)
+        TextField(
+            value = searchQuery,
+            onValueChange = { query ->
+                searchQuery = query
+                onSearch(query)
+            },
+            label = { Text("Search") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        LazyColumn(
+            state = scrollState,
+            contentPadding = PaddingValues(3.dp),
+            modifier = Modifier.background(MaterialTheme.colorScheme.background)
+        ) {
+            items(products) { product ->
+                ProductItem(product, navController)
+            }
         }
     }
 }

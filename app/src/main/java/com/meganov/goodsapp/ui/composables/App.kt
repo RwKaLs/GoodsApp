@@ -21,6 +21,7 @@ fun App(context: Context, viewModel: ProductListVM) {
                 products = products,
                 isLoading = isLoading,
                 navController = navController,
+                onSearch = viewModel::searchProducts,
                 onLoadMore = viewModel::loadProducts
             )
         }
@@ -34,4 +35,5 @@ fun App(context: Context, viewModel: ProductListVM) {
         }
     }
 }
+
 

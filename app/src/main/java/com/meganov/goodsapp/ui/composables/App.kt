@@ -14,14 +14,18 @@ import com.meganov.goodsapp.ui.ProductListVM
 fun App(context: Context, viewModel: ProductListVM) {
     val products by viewModel.products.observeAsState(emptyList())
     val isLoading by viewModel.isLoading.observeAsState(false)
+    val categories by viewModel.categories.observeAsState(emptyList())
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "product_list") {
         composable("product_list") {
             ProductList(
                 products = products,
+                categories = categories,
                 isLoading = isLoading,
                 navController = navController,
                 onSearch = viewModel::searchProducts,
+                onSelectCategory = viewModel::getProductsByCategory,
+                emptyProducts = viewModel::emptyProducts,
                 onLoadMore = viewModel::loadProducts
             )
         }
@@ -35,5 +39,3 @@ fun App(context: Context, viewModel: ProductListVM) {
         }
     }
 }
-
-

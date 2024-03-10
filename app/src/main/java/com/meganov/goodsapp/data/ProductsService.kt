@@ -2,6 +2,7 @@ package com.meganov.goodsapp.data
 
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ProductsService {
@@ -10,4 +11,10 @@ interface ProductsService {
 
     @GET("/products/search")
     fun search(@Query("q") query: String): Single<ProductsResponse>
+
+    @GET("/products/category/{category}")
+    fun getProductsByCategory(@Path("category") category: String): Single<ProductsResponse>
+
+    @GET("/products/categories")
+    fun getCategories(): Single<List<String>>
 }

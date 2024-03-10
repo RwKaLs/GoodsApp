@@ -13,14 +13,23 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 class ProductListVM(private val api: ProductsService) : ViewModel() {
 
     private val _products = MutableLiveData<List<Product>>()
+    val products: LiveData<List<Product>> get() = _products
+
+    private val _categories = MutableLiveData<MutableList<String>>()
+    val categories: LiveData<MutableList<String>> get() = _categories
+
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
-    val products: LiveData<List<Product>> get() = _products
 
     private var page = 0
 
     init {
+        getCategories()
         loadProducts()
+    }
+
+    fun emptyProducts() {
+        _products.value = emptyList()
     }
 
     private val loadingErrTAG = "Page Loading Error"
@@ -31,7 +40,9 @@ class ProductListVM(private val api: ProductsService) : ViewModel() {
         api.getProducts(page * 20, 20)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doFinally { _isLoading.value = false }
+            .doFinally {
+                _isLoading.value = false
+            }
             .subscribe({ newProducts ->
                 _products.value = _products.value.orEmpty() + newProducts.products
                 page++
@@ -44,8 +55,6 @@ class ProductListVM(private val api: ProductsService) : ViewModel() {
     fun searchProducts(query: String) {
         _products.value = emptyList()
         _isLoading.value = true
-        _isLoading.value = false
-        _isLoading.value = true
         api.search(query)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -57,6 +66,22 @@ class ProductListVM(private val api: ProductsService) : ViewModel() {
             })
     }
 
+    @SuppressLint("CheckResult")
+    fun getProductsByCategory(category: String) {
+        _products.value = emptyList()
+        _isLoading.value = true
+        page = 0
+        api.getProductsByCategory(category)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doFinally { _isLoading.value = false }
+            .subscribe({ categoryProducts ->
+                _products.value = categoryProducts.products
+            }, { error ->
+                Log.d(loadingErrTAG, "getProductsByCategory: ${error.message}")
+            })
+    }
+
     fun getProductById(id: Int): Product? {
         if (id - 1 in _products.value!!.indices) {
             val productByIndex = _products.value!![id - 1]
@@ -65,5 +90,20 @@ class ProductListVM(private val api: ProductsService) : ViewModel() {
             }
         }
         return _products.value!!.find { it.id == id }
+    }
+
+    @SuppressLint("CheckResult")
+    fun getCategories() {
+        _isLoading.value = true
+        api.getCategories()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doFinally { _isLoading.value = false }
+            .subscribe({ categories ->
+                _categories.value = categories.toMutableList()
+                if (_categories.value != null) _categories.value!!.add(0, "all")
+            }, { error ->
+                Log.d(loadingErrTAG, "getCategories: ${error.message}")
+            })
     }
 }

@@ -3,6 +3,7 @@ package com.meganov.goodsapp.ui.composables
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,11 +18,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -36,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -47,30 +52,67 @@ import com.meganov.goodsapp.data.Product
 @Composable
 fun ProductList(
     products: List<Product>,
+    categories: List<String>,
     isLoading: Boolean,
     navController: NavController,
     onSearch: (String) -> Unit,
+    onSelectCategory: (String) -> Unit,
+    emptyProducts: () -> Unit,
     onLoadMore: () -> Unit
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    var categoryChosen by rememberSaveable { mutableStateOf(false) }
     val scrollState = rememberLazyListState()
     val closeToEnd =
         (scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) >= products.size - 2
-    if (closeToEnd && !isLoading && searchQuery == "") {
+    if (closeToEnd && !isLoading && searchQuery == "" && !categoryChosen) {
         onLoadMore()
     }
+
     Column(
-        modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxSize()
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize()
     ) {
-        TextField(
-            value = searchQuery,
-            onValueChange = { query ->
-                searchQuery = query
-                onSearch(query)
-            },
-            label = { Text("Search") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        Row(Modifier.fillMaxWidth()) {
+            TextField(
+                value = searchQuery,
+                onValueChange = { query ->
+                    searchQuery = query
+                    onSearch(query)
+                },
+                label = { Text("Search") },
+                modifier = Modifier.weight(1f)
+            )
+            Box {
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    offset = DpOffset(x = 0.dp, y = 35.dp),
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .background(MaterialTheme.colorScheme.background)
+                ) {
+                    categories.forEach { category ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(text = category)
+                            }, onClick = {
+                                categoryChosen = true
+                                if (category != "all") onSelectCategory(category) else {
+                                    emptyProducts()
+                                    categoryChosen = false
+                                }
+                                expanded = false
+                            })
+                    }
+                }
+                IconButton(onClick = { expanded = true }) {
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Category")
+                }
+            }
+        }
 
         LazyColumn(
             state = scrollState,
@@ -84,7 +126,6 @@ fun ProductList(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductItem(product: Product, navController: NavController) {
     Card(

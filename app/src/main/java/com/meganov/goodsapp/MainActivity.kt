@@ -22,13 +22,14 @@ class MainActivity : ComponentActivity() {
                 val viewModel = viewModel<ProductListVM>(
                     factory = object : ViewModelProvider.Factory {
                         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            val api = Retrofit.Builder()
+                            return ProductListVM(
+                                Retrofit.Builder()
                                 .baseUrl("https://dummyjson.com")
                                 .addConverterFactory(GsonConverterFactory.create())
                                 .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                                 .build()
                                 .create(ProductsService::class.java)
-                            return ProductListVM(api) as T
+                            ) as T
                         }
                     }
                 )

@@ -28,8 +28,12 @@ class ProductListVM(private val api: ProductsService) : ViewModel() {
         loadProducts()
     }
 
+    /**
+     * Completely remove all products (to keep order after categorization when needed).
+     */
     fun emptyProducts() {
         _products.value = emptyList()
+        page = 0
     }
 
     private val loadingErrTAG = "Page Loading Error"
@@ -98,6 +102,7 @@ class ProductListVM(private val api: ProductsService) : ViewModel() {
         api.getCategories()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .retry()
             .doFinally { _isLoading.value = false }
             .subscribe({ categories ->
                 _categories.value = categories.toMutableList()

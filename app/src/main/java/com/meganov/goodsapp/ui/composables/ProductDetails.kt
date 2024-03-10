@@ -36,52 +36,7 @@ fun ProductDetails(product: Product) {
         LazyColumn(modifier = Modifier.padding(16.dp)) {
             item {
                 ImageCarousel(images = product.images)
-                Text(
-                    text = product.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 35.sp
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                RatingBar(rating = product.rating)
-                Spacer(modifier = Modifier.height(20.dp))
-                Row {
-                    Text(
-                        text = "${product.price} $",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.Green,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 25.sp
-                    )
-                    Spacer(modifier = Modifier.width(50.dp))
-                    Text(
-                        text = "-${product.discountPercentage}%",
-                        style = MaterialTheme.typography.titleMedium, color = Color.Red,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 25.sp
-                    )
-                }
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = "Stock: ${product.stock}", style = MaterialTheme.typography.titleMedium,
-                    color = Color.White,
-                    fontSize = 20.sp
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = "Brand: ${product.brand}", style = MaterialTheme.typography.titleMedium,
-                    color = Color.White,
-                    fontSize = 20.sp
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = product.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    lineHeight = 24.sp
-                )
+                TextDetails(product = product)
             }
         }
     }
@@ -115,5 +70,55 @@ fun CarouselItem(url: String, modifier: Modifier = Modifier) {
         painter = painter,
         contentDescription = "Product Image",
         modifier = modifier
+    )
+}
+
+@Composable
+fun TextDetails(product: Product) {
+    Text(
+        text = product.title,
+        style = MaterialTheme.typography.titleMedium,
+        color = Color.White,
+        fontWeight = FontWeight.Bold,
+        fontSize = 35.sp
+    )
+    Spacer(modifier = Modifier.height(20.dp))
+    RatingBar(rating = product.rating)
+    Spacer(modifier = Modifier.height(20.dp))
+    Row {
+        Text(
+            text = "${product.price} $",
+            style = MaterialTheme.typography.titleMedium,
+            color = Color.Green,
+            fontWeight = FontWeight.Bold,
+            fontSize = 25.sp
+        )
+        Spacer(modifier = Modifier.width(50.dp))
+        Text(
+            text = "-${product.discountPercentage}%",
+            style = MaterialTheme.typography.titleMedium, color = Color.Red,
+            fontWeight = FontWeight.Bold,
+            fontSize = 25.sp
+        )
+    }
+    Spacer(modifier = Modifier.height(20.dp))
+    Text(
+        text = "Stock: ${product.stock}", style = MaterialTheme.typography.titleMedium,
+        color = Color.White,
+        fontSize = 20.sp
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    Text(
+        text = "Brand: ${product.brand}", style = MaterialTheme.typography.titleMedium,
+        color = Color.White,
+        fontSize = 20.sp
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    Text(
+        text = product.description,
+        style = MaterialTheme.typography.bodyMedium,
+        color = Color.White,
+        fontSize = 20.sp,
+        lineHeight = 24.sp
     )
 }

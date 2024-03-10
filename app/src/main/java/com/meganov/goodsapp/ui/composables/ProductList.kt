@@ -56,6 +56,7 @@ fun ProductList(
     products: List<Product>,
     categories: List<String>,
     isLoading: Boolean,
+    internetState: () -> Boolean,
     navController: NavController,
     onSearch: (String) -> Unit,
     onSelectCategory: (String) -> Unit,
@@ -63,21 +64,22 @@ fun ProductList(
     onLoadMore: () -> Unit
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    var categoryChosen by rememberSaveable { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) } // categories menu
+    var categoryChosen by rememberSaveable { mutableStateOf(false) } // to keep track when to reload products
     val scrollState = rememberLazyListState()
     val closeToEnd =
         (scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) >= products.size - 2
+    // downloading by chunks (20 items)
     if (closeToEnd && !isLoading && searchQuery == "" && !categoryChosen) {
         onLoadMore()
     }
-
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
             .fillMaxSize()
     ) {
         Row(Modifier.fillMaxWidth()) {
+            // Search field
             TextField(
                 value = searchQuery,
                 onValueChange = { query ->
@@ -85,8 +87,11 @@ fun ProductList(
                     onSearch(query)
                 },
                 label = { Text("Search") },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(3.dp)
             )
+            // Choose category
             Box {
                 DropdownMenu(
                     expanded = expanded,
@@ -115,7 +120,11 @@ fun ProductList(
                 }
             }
         }
-        if (isLoading && products.isEmpty()) {
+        if (!internetState()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Network error")
+            }
+        } else if (isLoading && products.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = Color.White)
             }
@@ -165,6 +174,9 @@ fun ProductItem(product: Product, navController: NavController) {
     }
 }
 
+/**
+ * Load image using coil.
+ */
 @Composable
 fun NetworkImage(url: String, modifier: Modifier = Modifier) {
     val painter = rememberImagePainter(
@@ -182,6 +194,9 @@ fun NetworkImage(url: String, modifier: Modifier = Modifier) {
     )
 }
 
+/**
+ * Product details on productlist screen.
+ */
 @Composable
 fun DetailsCard(product: Product) {
     Column {
@@ -227,6 +242,9 @@ fun DetailsCard(product: Product) {
     }
 }
 
+/**
+ * Star and rating.
+ */
 @Composable
 fun RatingBar(rating: Double, modifier: Modifier = Modifier) {
     Row {

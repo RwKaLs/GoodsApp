@@ -1,6 +1,8 @@
 package com.meganov.goodsapp.ui.composables
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.net.ConnectivityManager
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,8 +15,12 @@ import com.meganov.goodsapp.ui.ProductListVM
 @Composable
 fun App(context: Context, viewModel: ProductListVM) {
     val products by viewModel.products.observeAsState(emptyList())
-    val isLoading by viewModel.isLoading.observeAsState(false)
     val categories by viewModel.categories.observeAsState(emptyList())
+    // check that some products are loading
+    val isLoading by viewModel.isLoading.observeAsState(false)
+    /*
+    2 screens, navigation by navController product_list -> product_details(id)
+     */
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "product_list") {
         composable("product_list") {
@@ -22,6 +28,7 @@ fun App(context: Context, viewModel: ProductListVM) {
                 products = products,
                 categories = categories,
                 isLoading = isLoading,
+                internetState = { isNetworkAvailable(context) },
                 navController = navController,
                 onSearch = viewModel::searchProducts,
                 onSelectCategory = viewModel::getProductsByCategory,
@@ -30,6 +37,7 @@ fun App(context: Context, viewModel: ProductListVM) {
             )
         }
         composable("product_details/{product_id}") { navBackStackEntry ->
+            // try to get the product_id and pass to details screen
             val id: String? = navBackStackEntry.arguments?.getString("product_id")
             if (id == null) {
                 Toast.makeText(context, "The product does not exist!", Toast.LENGTH_SHORT).show()
@@ -39,3 +47,14 @@ fun App(context: Context, viewModel: ProductListVM) {
         }
     }
 }
+
+/**
+ * Check the network connection.
+ */
+@SuppressLint("ServiceCast")
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val networkInfo = connectivityManager.activeNetworkInfo
+    return networkInfo != null && networkInfo.isConnected
+}
+

@@ -17,4 +17,4 @@ For network requests, the app uses **Retrofit**, **RxJava** is used for managing
 
 | Product List | Product details | Categories                                                   | Search                                                       |
 |--------------------------------------------------------------|--------------------------------------------------------------|--------------------------------------------------------------|--------------------------------------------------------------|
-| ![Screenshot 1](/screenshots/Screenshot_20240312-133233.png) | ![Screenshot 2](/screenshots/Screenshot_20240312-133325.png) | ![Screenshot 3](/screenshots/Screenshot_20240312-133402.png) | ![Screenshot 4](/screenshots/Screenshot_20240312-134444.png) |
+| ![Screenshot 1](/screenshots/Screenshot_20240312-133233.png) | ![Screenshot 2](/screenshots/Screenshot_20240312-133325.png) | ![Screenshot 3](/screenshots/Screenshot_20240312-134402.png) | ![Screenshot 4](/screenshots/Screenshot_20240312-134444.png) |

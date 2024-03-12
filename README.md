@@ -15,6 +15,6 @@ The application is built using **Kotlin** and follows the **MVVM architecture** 
 
 For network requests, the app uses **Retrofit**, **RxJava** is used for managing multithreading and data streams.
 
-| Product List | Product details | Categories | Search |
-|--------------|--------------|--------------|--------------|
-| ![Screenshot 1](/screenshots/Screenshot_20240312-133233.png) | ![Screenshot 2](/screenshots/Screenshot_20240312-133325.png) | ![Screenshot 3](/screenshots/Screenshot_20240312-134402.png) | ![Screenshot 4](/screenshots/Screenshot_20240312-134444.png) |
+| Product List                                                 | Product details                                              | Categories                                                   | Search                                                       |
+|--------------------------------------------------------------|--------------------------------------------------------------|--------------------------------------------------------------|--------------------------------------------------------------|
+| ![Screenshot 1](/screenshots/Screenshot_20240312-133233.png) | ![Screenshot 2](/screenshots/Screenshot_20240312-133323.png) | ![Screenshot 3](/screenshots/Screenshot_20240312-134403.png) | ![Screenshot 4](/screenshots/Screenshot_20240312-134443.png) |

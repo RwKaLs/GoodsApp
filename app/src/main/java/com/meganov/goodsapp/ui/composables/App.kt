@@ -57,4 +57,3 @@ fun isNetworkAvailable(context: Context): Boolean {
     val networkInfo = connectivityManager.activeNetworkInfo
     return networkInfo != null && networkInfo.isConnected
 }
-

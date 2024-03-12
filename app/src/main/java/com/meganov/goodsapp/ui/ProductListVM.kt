@@ -44,6 +44,7 @@ class ProductListVM(private val api: ProductsService) : ViewModel() {
         api.getProducts(page * 20, 20)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .retry()
             .doFinally {
                 _isLoading.value = false
             }
@@ -62,6 +63,7 @@ class ProductListVM(private val api: ProductsService) : ViewModel() {
         api.search(query)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .retry()
             .doFinally { _isLoading.value = false }
             .subscribe({ searchResults ->
                 _products.value = searchResults.products
@@ -78,6 +80,7 @@ class ProductListVM(private val api: ProductsService) : ViewModel() {
         api.getProductsByCategory(category)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .retry()
             .doFinally { _isLoading.value = false }
             .subscribe({ categoryProducts ->
                 _products.value = categoryProducts.products
